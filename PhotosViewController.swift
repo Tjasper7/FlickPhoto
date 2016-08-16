@@ -23,26 +23,23 @@ class PhotosViewController: UIViewController, UICollectionViewDelegate {
         collectionView.delegate = self
         store.fetchRecentPhotos() {
             (photosResult) -> Void in
-            OperationQueue.main().addOperation( {
-                switch photosResult {
-                case let .Success(photos):
-                    print("Successfully found \(photos.count) recent photos.")
-                    self.photoDataSource.photos = photos
-                case let .Failure(error):
-                    print("Error fetching recent photos \(error)")
-                    self.photoDataSource.photos.removeAll()
-                }
-                self.collectionView.reloadSections(IndexSet(integer: 0))
-            })
+            
+          let sortByDateTaken = NSSortDescriptor(key: "dateTaken", ascending: true)
+            let allPhotos = try! self.store.fetchMainQueuePhotos(predicate: nil, sortDescriptors: [sortByDateTaken])
+            OperationQueue.main.addOperation() {
+                self.photoDataSource.photos = allPhotos
+                self.collectionView.reloadSections(NSIndexSet(index: 0) as IndexSet)
+                
+            }
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "ShowPhoto" {
-            if let selectedIndexPath = collectionView.indexPathsForSelectedItems()?.first {
+            if let selectedIndexPath = collectionView.indexPathsForSelectedItems?.first {
                 let photo = photoDataSource.photos[selectedIndexPath.row]
                 
-                let destinationViewController = segue.destinationViewController as! PhotoInfoViewController
+                let destinationViewController = segue.destination as! PhotoInfoViewController
                 destinationViewController.photo = photo
                 destinationViewController.store = store
             }
@@ -54,7 +51,7 @@ class PhotosViewController: UIViewController, UICollectionViewDelegate {
         
         store.fetchImageForPhoto(photo: photo, completion: {
             (result) -> Void in
-            OperationQueue.main().addOperation() {
+            OperationQueue.main.addOperation() {
                 
                 let photoIndex = self.photoDataSource.photos.index(of: photo)!
                 let photoIndexPath = IndexPath(row: photoIndex, section: 0)

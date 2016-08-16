@@ -25,12 +25,22 @@ class PhotoInfoViewController: UIViewController {
             (result) -> Void in
             switch result {
             case let .Success(image):
-                OperationQueue.main().addOperation() {
+                OperationQueue.main.addOperation() {
                     self.imageView.image = image
                 }
             case let .Failure(error):
                 print("Error fetching image for Photo: \(error)")
             }
         })
-    }    
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowTags" {
+            let navController = segue.destination as! UINavigationController
+            let tagController = navController.topViewController as! TagsViewController
+            
+            tagController.store = store
+            tagController.photo = photo 
+        }
+    }
 }
