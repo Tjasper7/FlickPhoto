@@ -11,4 +11,4 @@ The `PhotoStore` class handles the actual web service calls
 Two entities Photo and Tag
 
 ###Walkthrough
-![Walkthrough](https://cloud.githubusercontent.com/assets/6208036/17580426/28466594-5f64-11e6-913d-9f79dcf5502e.gif)
+![Walkthrough](https://cloud.githubusercontent.com/assets/6208036/17910005/a9ba788a-694c-11e6-846a-4fecafb473f4.gif)
